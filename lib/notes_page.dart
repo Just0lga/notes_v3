@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_v3/firestore.dart';
@@ -16,13 +14,23 @@ class _NotesPageState extends State<NotesPage> {
   final TextEditingController textController = TextEditingController();
   final FirestoreService firestoreservice = FirestoreService();
   //open dialog box to add a note
-  void openNoteBox({String? docID}) {
+  void openNoteBox({String? docID, noteText}) {
+    if (docID == null) {
+      textController.text = " ";
+    } else {
+      textController.text = noteText.toString();
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        title: docID != null ? Text("Update your note") : Text("Add a note"),
         backgroundColor: Colors.grey,
         content: TextField(
           controller: textController,
+          minLines: 10,
+          maxLines: 15,
+          decoration: InputDecoration(),
         ),
         actions: [
           //button to save
@@ -31,6 +39,7 @@ class _NotesPageState extends State<NotesPage> {
                 //add a new note
                 if (docID == null) {
                   firestoreservice.addNote(textController.text);
+
                   //update the note
                 } else {
                   firestoreservice.updateNote(docID, textController.text);
@@ -38,6 +47,7 @@ class _NotesPageState extends State<NotesPage> {
 
                 //clear
                 textController.clear();
+
                 //close the box
                 Navigator.pop(context);
               },
@@ -88,6 +98,9 @@ class _NotesPageState extends State<NotesPage> {
                 String noteText = data["note"];
                 Timestamp timestamp = data["timestamp"] as Timestamp;
                 DateTime date = timestamp.toDate();
+                int x = (noteText.length);
+                double length = x / 60;
+                print(x);
 
                 //display as a list tile
                 return Column(
@@ -126,7 +139,8 @@ class _NotesPageState extends State<NotesPage> {
                               right: MediaQuery.of(context).size.width * 0.025),
                           child: IconButton(
                               padding: EdgeInsets.only(bottom: 1),
-                              onPressed: () => openNoteBox(docID: docID),
+                              onPressed: () =>
+                                  openNoteBox(docID: docID, noteText: noteText),
                               icon: Icon(Icons.edit)),
                           decoration: BoxDecoration(
                               color: Colors.grey,

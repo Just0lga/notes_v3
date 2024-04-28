@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:notes_v3/NotesPage.dart';
+import 'package:notes_v3/notes_page.dart';
 import 'package:notes_v3/firebase_options.dart';
 
 void main() async {
